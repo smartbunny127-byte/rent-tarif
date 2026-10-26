@@ -3,280 +3,404 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Innova Type 4 Tariff Calculator</title>
+  <title>Toyota Innova Type - 4 Tariff Calculator</title>
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Toyota Innova Type - 4 Tariff Calculator" />
+  <meta property="og:description" content="Calculate self-drive and chauffeur rates instantly." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://smartbunny127-byte.github.io/rent-tarif/" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Outfit (Primary), Inter (Secondary/Body), Lora (Disclaimer) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lora:wght@400;500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Flatpickr Date & Time Picker CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+            lora: ['Lora', 'serif'],
+          },
+          colors: {
+            appBg: '#0E1113',
+            cardBg: '#1B1D1F',
+            cardBorder: '#2A2D31',
+            inputBg: '#282A2D',
+            inputBorder: '#3A3D42',
+            activePill: '#23262B',
+            textWhite: '#FFFFFF',
+            textMuted: '#A0A6AD',
+            accentBlue: '#2962FF',
+            accentBlueHover: '#2554C7',
+            appDivider: '#2E3236',
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    :root {
-      --wa-dark: #0b141a;
-      --wa-surface: #111b21;
-      --wa-card: #202c33;
-      --wa-green: #00a884;
-      --wa-green-hover: #029072;
-      --wa-text: #e9edef;
-      --wa-text-muted: #8696a0;
-      --wa-border: #222d34;
-      --wa-highlight: #25d366;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
     body {
-      background-color: var(--wa-dark);
-      color: var(--wa-text);
-      display: flex;
-      justify-content: center;
-      padding: 16px;
-      min-height: 100vh;
+      background-color: #0E1113;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
-    .calc-card {
-      background-color: var(--wa-surface);
-      width: 100%;
-      max-width: 440px;
-      border-radius: 16px;
-      border: 1px solid var(--wa-border);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
+    
+    /* Remove arrows/spinners from number inputs */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
     }
-    .header {
-      border-bottom: 1px solid var(--wa-border);
-      padding-bottom: 12px;
+    input[type=number] {
+      -moz-appearance: textfield;
     }
-    .header h1 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--wa-text);
+
+    /* Flatpickr dark styling */
+    .flatpickr-calendar {
+      background: #1B1D1F !important;
+      border: 1px solid #2A2D31 !important;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6) !important;
+      font-family: 'Inter', sans-serif !important;
+      border-radius: 16px !important;
     }
-    .header p {
-      font-size: 0.85rem;
-      color: var(--wa-text-muted);
-      margin-top: 4px;
+    .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+      background: #2962FF !important;
+      border-color: #2962FF !important;
+      color: #FFFFFF !important;
     }
-    .driver-selector {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      background: var(--wa-card);
-      padding: 4px;
-      border-radius: 10px;
+    .flatpickr-time {
+      background: #1B1D1F !important;
+      border-top: 1px solid #2A2D31 !important;
     }
-    .driver-btn {
-      background: transparent;
-      border: none;
-      color: var(--wa-text-muted);
-      padding: 10px 0;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
+    .flatpickr-time input {
+      color: #FFFFFF !important;
+      font-family: 'Outfit', sans-serif !important;
     }
-    .driver-btn.active {
-      background: var(--wa-green);
-      color: #fff;
-    }
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .input-label-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    .highlight-badge {
-      color: var(--wa-highlight);
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-    .presets {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
-    .preset-pill {
-      background: var(--wa-card);
-      border: 1px solid var(--wa-border);
-      color: var(--wa-text-muted);
-      padding: 5px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
-    input[type=range] {
-      width: 100%;
-      accent-color: var(--wa-green);
-      height: 6px;
-      background: var(--wa-card);
-      border-radius: 4px;
-      outline: none;
-    }
-    .bill-card {
-      background: var(--wa-card);
-      border-radius: 12px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      border-left: 4px solid var(--wa-green);
-    }
-    .bill-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: var(--wa-text-muted);
-    }
-    .bill-row.total {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--wa-text);
-      padding-top: 8px;
-      border-top: 1px dashed var(--wa-border);
-    }
-    .book-btn {
-      background-color: var(--wa-green);
-      color: white;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      transition: background 0.2s;
-    }
-    .book-btn:active {
-      background-color: var(--wa-green-hover);
+    .flatpickr-time .flatpickr-am-pm {
+      color: #A0A6AD !important;
     }
   </style>
 </head>
-<body>
+<body class="min-h-screen flex justify-center p-3 sm:p-4 pb-28">
 
-  <div class="calc-card">
-    <div class="header">
-      <h1>Innova Type 4 Tariff</h1>
-      <p>Instant trip estimate & booking</p>
-    </div>
+  <main class="w-full max-w-[420px] flex flex-col gap-3.5">
+    
+    <!-- CARD 1: HERO TARIFF ESTIMATE -->
+    <section class="bg-cardBg border border-cardBorder rounded-[30px] p-5 sm:p-6 flex flex-col shadow-lg">
+      <span class="font-outfit text-[11px] uppercase tracking-[0.08em] font-medium text-textMuted">
+        Toyota Innova Type - 4
+      </span>
+      <h1 class="font-outfit text-[23px] font-medium text-textWhite mt-0.5">
+        Rental Estimate
+      </h1>
+      <p id="heroSummaryTag" class="font-inter text-[13px] text-textMuted mt-1 mb-3">
+        2 Days • 300 KM • Self Drive
+      </p>
+      
+      <!-- Primary Price Display -->
+      <div id="heroPrice" class="font-outfit text-[40px] leading-tight font-normal text-textWhite tracking-[-0.02em] mb-5">
+        ₹ 3,600
+      </div>
 
-    <!-- Driver Selector -->
-    <div class="driver-selector">
-      <button type="button" class="driver-btn active" id="btnWithout" onclick="setDriver('without')">Without Driver</button>
-      <button type="button" class="driver-btn" id="btnWith" onclick="setDriver('with')">With Driver</button>
-    </div>
+      <!-- 2x2 Breakdown Grid -->
+      <div class="border-t border-appDivider pt-4 grid grid-cols-2 gap-x-4 gap-y-3.5">
+        <!-- 1. Base Fare -->
+        <div class="flex flex-col">
+          <span id="baseFareLabel" class="font-inter text-[13px] text-textMuted">Base Fare (2 d)</span>
+          <span id="baseFareValue" class="font-outfit text-[15px] font-medium text-textWhite mt-0.5">₹ 2,600</span>
+        </div>
 
-    <!-- Duration -->
-    <div class="input-group">
-      <div class="input-label-row">
-        <span>Rental Duration</span>
-        <span class="highlight-badge" id="daysDisplay">2 Days</span>
-      </div>
-      <input type="range" id="daysRange" min="1" max="10" value="2" oninput="updateCalculation()">
-    </div>
+        <!-- 2. Free Allowance -->
+        <div class="flex flex-col">
+          <span class="font-inter text-[13px] text-textMuted">Free Allowance</span>
+          <span id="freeAllowanceValue" class="font-outfit text-[15px] font-medium text-textWhite mt-0.5">200 km</span>
+        </div>
 
-    <!-- KM Slider & Presets -->
-    <div class="input-group">
-      <div class="input-label-row">
-        <span>Total Up & Down KM</span>
-        <span class="highlight-badge" id="kmDisplay">300 KM</span>
-      </div>
-      <input type="range" id="kmRange" min="50" max="1200" step="10" value="300" oninput="updateCalculation()">
-      <div class="presets">
-        <span class="preset-pill" onclick="setRoute(300, 'Palakkad')">Palakkad (300 km)</span>
-        <span class="preset-pill" onclick="setRoute(260, 'Munnar')">Munnar (260 km)</span>
-        <span class="preset-pill" onclick="setRoute(420, 'Trivandrum')">Trivandrum (420 km)</span>
-      </div>
-    </div>
+        <!-- 3. Extra KM Charge -->
+        <div class="flex flex-col">
+          <span id="extraKmLabel" class="font-inter text-[13px] text-textMuted">Extra KM (100 km)</span>
+          <span id="extraKmValue" class="font-outfit text-[15px] font-medium text-textWhite mt-0.5">₹ 1,000</span>
+        </div>
 
-    <!-- Summary Box -->
-    <div class="bill-card">
-      <div class="bill-row">
-        <span>Base Rate</span>
-        <span id="baseFareTxt">₹2,600 (₹1,300/day)</span>
+        <!-- 4. Overrun Rate -->
+        <div class="flex flex-col">
+          <span class="font-inter text-[13px] text-textMuted">Excess Rate</span>
+          <span id="overrunRateValue" class="font-outfit text-[15px] font-medium text-textWhite mt-0.5">₹ 10 / km</span>
+        </div>
       </div>
-      <div class="bill-row">
-        <span>Free Allowance</span>
-        <span id="freeKmTxt">200 KM</span>
-      </div>
-      <div class="bill-row">
-        <span>Extra Distance Charge</span>
-        <span id="extraKmTxt">100 KM × ₹10 = ₹1,000</span>
-      </div>
-      <div class="bill-row total">
-        <span>Estimated Total</span>
-        <span id="totalTxt" style="color: var(--wa-highlight);">₹3,600</span>
-      </div>
-    </div>
+    </section>
 
-    <!-- Action Link -->
-    <a href="#" id="waBookLink" class="book-btn">
-      Confirm & Book on WhatsApp
-    </a>
-  </div>
+    <!-- CARD 2: CONFIGURATION CONTROLS -->
+    <section class="bg-cardBg border border-cardBorder rounded-[30px] p-5 sm:p-6 flex flex-col gap-5 shadow-lg">
+      
+      <!-- 1. Travel Mode (Driver Option) -->
+      <div>
+        <div class="flex justify-between items-baseline mb-2">
+          <span class="font-outfit text-[14px] font-medium text-textWhite">Travel Mode</span>
+          <span id="driverRateMeta" class="font-inter text-[12px] text-textMuted">₹1,300/day • 100 km free</span>
+        </div>
+        
+        <!-- Segmented Capsule Control -->
+        <div class="bg-inputBg p-1 rounded-full grid grid-cols-2 gap-1 border border-cardBorder/60">
+          <button type="button" id="btnSelf" onclick="setDriver('without')" 
+            class="py-2.5 px-3 rounded-full text-center transition-all bg-activePill border border-inputBorder shadow-sm">
+            <div class="font-outfit text-[13px] font-medium text-textWhite">Self Drive</div>
+            <div class="font-inter text-[11px] text-textMuted">Drive yourself • ₹1,300/day</div>
+          </button>
+          
+          <button type="button" id="btnWith" onclick="setDriver('with')" 
+            class="py-2.5 px-3 rounded-full text-center transition-all border border-transparent">
+            <div class="font-outfit text-[13px] font-medium text-textMuted">With Driver</div>
+            <div class="font-inter text-[11px] text-textMuted">Chauffeur • ₹3,000/day</div>
+          </button>
+        </div>
+      </div>
 
+      <!-- 2. Estimated Travel Distance -->
+      <div>
+        <div class="flex justify-between items-baseline mb-2">
+          <span class="font-outfit text-[14px] font-medium text-textWhite">Estimated Travel Distance</span>
+          <span id="extraRateMeta" class="font-inter text-[12px] text-textMuted">₹10/km beyond allowance</span>
+        </div>
+        <div class="relative flex items-center">
+          <input type="number" id="kmInput" value="300" min="10" step="5" oninput="calculate()" 
+            class="w-full bg-inputBg border border-cardBorder focus:border-inputBorder rounded-full py-3 pl-5 pr-14 font-outfit text-[15px] font-medium text-textWhite outline-none transition-colors" />
+          <span id="kmUnitLabel" class="absolute right-4 font-inter text-[12px] text-textMuted uppercase font-medium tracking-wider pointer-events-none">
+            KM
+          </span>
+        </div>
+      </div>
+
+      <!-- 3. Trip Duration (Days) -->
+      <div class="flex justify-between items-center">
+        <div>
+          <div class="font-outfit text-[14px] font-medium text-textWhite">Trip Duration</div>
+          <div class="font-inter text-[12px] text-textMuted">How many days will you need?</div>
+        </div>
+        <!-- Stepper Capsule -->
+        <div class="flex items-center gap-4 bg-inputBg border border-cardBorder rounded-full px-3 py-1.5">
+          <button type="button" onclick="adjustDays(-1)" class="w-7 h-7 flex items-center justify-center font-outfit text-lg text-textMuted hover:text-textWhite active:scale-95 transition-all">−</button>
+          <span id="daysCount" class="font-outfit text-[15px] font-medium text-textWhite min-w-[14px] text-center">2</span>
+          <button type="button" onclick="adjustDays(1)" class="w-7 h-7 flex items-center justify-center font-outfit text-lg text-textMuted hover:text-textWhite active:scale-95 transition-all">+</button>
+        </div>
+      </div>
+
+      <!-- Thin Divider Line -->
+      <div class="h-[1px] bg-appDivider w-full my-0.5"></div>
+
+      <!-- 4. Destination / Route -->
+      <div>
+        <div class="flex justify-between items-baseline mb-2">
+          <span class="font-outfit text-[14px] font-medium text-textWhite">Where would you like to go?</span>
+          <span class="font-inter text-[12px] text-textMuted">Route</span>
+        </div>
+        <input type="text" id="destInput" value="Palakkad" placeholder="e.g. Munnar, Trivandrum, Airport" oninput="calculate()"
+          class="w-full bg-inputBg border border-cardBorder focus:border-inputBorder rounded-full py-3 px-5 font-outfit text-[15px] text-textWhite placeholder-[#5A5F69] outline-none transition-colors" />
+      </div>
+
+      <!-- 5. Trip Schedule (Date & Time 50/50 Split) -->
+      <div>
+        <div class="flex justify-between items-baseline mb-2">
+          <span class="font-outfit text-[14px] font-medium text-textWhite">When should we get ready?</span>
+          <span class="font-inter text-[12px] text-textMuted">Start Time</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <!-- Left: Date -->
+          <div class="relative flex items-center">
+            <input type="text" id="startDatePicker" placeholder="Select Date" readonly
+              class="w-full bg-inputBg border border-cardBorder focus:border-inputBorder rounded-full py-3 pl-4 pr-10 font-outfit text-[14px] text-textWhite cursor-pointer outline-none transition-colors" />
+            <svg class="w-[18px] h-[18px] absolute right-3.5 text-textMuted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <!-- Right: Time -->
+          <div class="relative flex items-center">
+            <input type="text" id="startTimePicker" placeholder="Select Time" readonly
+              class="w-full bg-inputBg border border-cardBorder focus:border-inputBorder rounded-full py-3 pl-4 pr-10 font-outfit text-[14px] text-textWhite cursor-pointer outline-none transition-colors" />
+            <svg class="w-[18px] h-[18px] absolute right-3.5 text-textMuted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="5" stroke-width="2"></rect>
+              <polyline points="12 7 12 12 15 15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. One-Way Drop Checkbox (Conditional) -->
+      <div id="onewayContainer" class="hidden items-center gap-3 pt-1 cursor-pointer" onclick="toggleCheckbox(event)">
+        <input type="checkbox" id="oneWayCheck" onchange="calculate()" 
+          class="w-4 h-4 rounded accent-accentBlue bg-inputBg border-cardBorder cursor-pointer" />
+        <label for="oneWayCheck" class="font-inter text-[13px] text-textMuted cursor-pointer select-none">
+          One-way drop: Chauffeur returns immediately (no waiting).
+        </label>
+      </div>
+
+      <!-- 7. Check Availability CTA Button -->
+      <a href="#" id="waButton" target="_blank"
+        class="mt-2 w-full h-[50px] bg-accentBlue hover:bg-accentBlueHover active:opacity-85 text-textWhite font-outfit text-[15px] font-medium rounded-full flex items-center justify-center transition-all shadow-md">
+        Check Availability
+      </a>
+
+      <!-- 8. Polite Disclaimer -->
+      <p class="font-lora text-[11px] text-textMuted text-center leading-relaxed px-2">
+        Tolls, state taxes & parking charges payable as per actuals.
+      </p>
+
+    </section>
+  </main>
+
+  <!-- Flatpickr Script -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  
   <script>
     let driverMode = 'without';
-    let selectedDestination = 'Palakkad';
+    let days = 2;
     const waNumber = '919496480243';
+    let datePickerInstance = null;
+    let timePickerInstance = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const now = new Date();
+
+      datePickerInstance = flatpickr("#startDatePicker", {
+        dateFormat: "d M Y",
+        defaultDate: now,
+        minDate: "today",
+        onChange: calculate
+      });
+
+      timePickerInstance = flatpickr("#startTimePicker", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "h:i K",
+        defaultDate: now,
+        onChange: calculate
+      });
+
+      calculate();
+    });
+
+    function toggleCheckbox(e) {
+      if (e.target.tagName !== 'INPUT') {
+        const cb = document.getElementById('oneWayCheck');
+        cb.checked = !cb.checked;
+        calculate();
+      }
+    }
 
     function setDriver(mode) {
       driverMode = mode;
-      document.getElementById('btnWithout').classList.toggle('active', mode === 'without');
-      document.getElementById('btnWith').classList.toggle('active', mode === 'with');
-      updateCalculation();
+      const isSelf = mode === 'without';
+
+      const btnSelf = document.getElementById('btnSelf');
+      const btnWith = document.getElementById('btnWith');
+      const onewayBox = document.getElementById('onewayContainer');
+
+      if (isSelf) {
+        btnSelf.className = 'py-2.5 px-3 rounded-full text-center transition-all bg-activePill border border-inputBorder shadow-sm';
+        btnSelf.children[0].className = 'font-outfit text-[13px] font-medium text-textWhite';
+        
+        btnWith.className = 'py-2.5 px-3 rounded-full text-center transition-all border border-transparent';
+        btnWith.children[0].className = 'font-outfit text-[13px] font-medium text-textMuted';
+
+        onewayBox.classList.add('hidden');
+        onewayBox.classList.remove('flex');
+        document.getElementById('oneWayCheck').checked = false;
+      } else {
+        btnWith.className = 'py-2.5 px-3 rounded-full text-center transition-all bg-activePill border border-inputBorder shadow-sm';
+        btnWith.children[0].className = 'font-outfit text-[13px] font-medium text-textWhite';
+
+        btnSelf.className = 'py-2.5 px-3 rounded-full text-center transition-all border border-transparent';
+        btnSelf.children[0].className = 'font-outfit text-[13px] font-medium text-textMuted';
+
+        onewayBox.classList.remove('hidden');
+        onewayBox.classList.add('flex');
+      }
+
+      calculate();
     }
 
-    function setRoute(km, name) {
-      document.getElementById('kmRange').value = km;
-      selectedDestination = name;
-      updateCalculation();
+    function adjustDays(delta) {
+      days = Math.max(1, Math.min(30, days + delta));
+      document.getElementById('daysCount').textContent = days;
+      calculate();
     }
 
-    function updateCalculation() {
-      const days = parseInt(document.getElementById('daysRange').value);
-      const totalKm = parseInt(document.getElementById('kmRange').value);
+    function calculate() {
+      const kmValue = parseInt(document.getElementById('kmInput').value) || 0;
+      const destination = document.getElementById('destInput').value.trim() || 'Not specified';
+      const isOneWay = driverMode === 'with' && document.getElementById('oneWayCheck').checked;
+      const isSelf = driverMode === 'without';
 
-      document.getElementById('daysDisplay').textContent = `${days} Day${days > 1 ? 's' : ''}`;
-      document.getElementById('kmDisplay').textContent = `${totalKm} KM`;
+      const dailyRate = isSelf ? 1300 : 3000;
+      const freeKmPerDay = isSelf ? 100 : 80;
+      const extraKmRate = isSelf ? 10 : 22;
 
-      const config = driverMode === 'without' 
-        ? { dailyRate: 1300, freeKmPerDay: 100, extraRate: 10, modeTitle: 'Without Driver (Self-Drive)' }
-        : { dailyRate: 3000, freeKmPerDay: 80,  extraRate: 22, modeTitle: 'With Driver' };
+      let modeLabel = isSelf ? 'Self Drive' : 'With Driver';
+      if (isOneWay) {
+        modeLabel += ' (One-Way Drop)';
+      }
 
-      const baseFare = days * config.dailyRate;
-      const freeKmTotal = days * config.freeKmPerDay;
-      const extraKm = Math.max(0, totalKm - freeKmTotal);
-      const extraCharge = extraKm * config.extraRate;
-      const grandTotal = baseFare + extraCharge;
+      // Metadata labels
+      document.getElementById('driverRateMeta').textContent = isSelf 
+        ? '₹1,300/day • 100 km free' 
+        : '₹3,000/day • 80 km free';
+      document.getElementById('extraRateMeta').textContent = `₹${extraKmRate}/km beyond allowance`;
 
-      document.getElementById('baseFareTxt').textContent = `₹${baseFare.toLocaleString('en-IN')} (₹${config.dailyRate}/day)`;
-      document.getElementById('freeKmTxt').textContent = `${freeKmTotal} KM`;
-      document.getElementById('extraKmTxt').textContent = extraKm > 0 ? `${extraKm} KM × ₹${config.extraRate} = ₹${extraCharge.toLocaleString('en-IN')}` : '₹0 (Within Limit)';
-      document.getElementById('totalTxt').textContent = `₹${grandTotal.toLocaleString('en-IN')}`;
+      // Tariff computation
+      const baseFare = days * dailyRate;
+      const freeAllowance = days * freeKmPerDay;
+      const extraKm = Math.max(0, kmValue - freeAllowance);
+      const extraKmFare = extraKm * extraKmRate;
+      const totalAmount = baseFare + extraKmFare;
 
-      const message = `*Innova Type 4 Booking Inquiry*%0A`
-        + `• Destination / Distance: ${totalKm} KM (${selectedDestination})%0A`
-        + `• Duration: ${days} Days%0A`
-        + `• Type: ${config.modeTitle}%0A`
-        + `----------------------------%0A`
-        + `*Estimated Tariff: ₹${grandTotal.toLocaleString('en-IN')}*%0A`
-        + `----------------------------%0A`
-        + `Please confirm vehicle availability.`;
+      // Update Card 1
+      document.getElementById('heroSummaryTag').textContent = `${days} Days • ${kmValue} KM • ${modeLabel}`;
+      document.getElementById('heroPrice').textContent = `₹ ${totalAmount.toLocaleString('en-IN')}`;
+      document.getElementById('baseFareLabel').textContent = `Base Fare (${days} d)`;
+      document.getElementById('baseFareValue').textContent = `₹ ${baseFare.toLocaleString('en-IN')}`;
+      document.getElementById('freeAllowanceValue').textContent = `${freeAllowance} km`;
+      document.getElementById('extraKmLabel').textContent = `Extra KM (${extraKm} km)`;
+      document.getElementById('extraKmValue').textContent = `₹ ${extraKmFare.toLocaleString('en-IN')}`;
+      document.getElementById('overrunRateValue').textContent = `₹ ${extraKmRate} / km`;
 
-      document.getElementById('waBookLink').href = `https://wa.me/${waNumber}?text=${message}`;
+      // Read Pickers
+      const dateVal = document.getElementById('startDatePicker').value || 'To be decided';
+      const timeVal = document.getElementById('startTimePicker').value || '';
+      const scheduleString = timeVal ? `${dateVal} at ${timeVal}` : dateVal;
+
+      // WhatsApp Message Formatting
+      let message = `*Toyota Innova Type - 4 Booking Inquiry*%0A`
+        + `• Start Schedule: ${scheduleString}%0A`
+        + `• Destination / Route: ${destination}%0A`
+        + `• Trip Duration: ${days} Day(s)%0A`
+        + `• Planned Distance: ${kmValue} KM (${modeLabel})%0A`;
+
+      if (isOneWay) {
+        message += `• Note: One-Way Drop Only (No driver waiting at destination)%0A`;
+      }
+
+      message += `----------------------------------%0A`
+        + `*Estimated Tariff: ₹ ${totalAmount.toLocaleString('en-IN')}*%0A`
+        + `(Base: ₹${baseFare.toLocaleString('en-IN')} + Extra KM: ₹${extraKmFare.toLocaleString('en-IN')})%0A`
+        + `Tolls, state taxes & parking charges payable as per actuals.%0A`
+        + `----------------------------------%0A`
+        + `Hello, could you please let me know if this vehicle is available for these dates?`;
+
+      document.getElementById('waButton').href = `https://wa.me/${waNumber}?text=${message}`;
     }
-
-    updateCalculation();
   </script>
 </body>
 </html>
