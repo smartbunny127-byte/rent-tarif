@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Innova Type 4 Tariff Calculator</title>
+  <style>
+    :root {
+      --wa-dark: #0b141a;
+      --wa-surface: #111b21;
+      --wa-card: #202c33;
+      --wa-green: #00a884;
+      --wa-green-hover: #029072;
+      --wa-text: #e9edef;
+      --wa-text-muted: #8696a0;
+      --wa-border: #222d34;
+      --wa-highlight: #25d366;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: var(--wa-dark);
+      color: var(--wa-text);
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+      min-height: 100vh;
+    }
+    .calc-card {
+      background-color: var(--wa-surface);
+      width: 100%;
+      max-width: 440px;
+      border-radius: 16px;
+      border: 1px solid var(--wa-border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .header {
+      border-bottom: 1px solid var(--wa-border);
+      padding-bottom: 12px;
+    }
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--wa-text);
+    }
+    .header p {
+      font-size: 0.85rem;
+      color: var(--wa-text-muted);
+      margin-top: 4px;
+    }
+    .driver-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: var(--wa-card);
+      padding: 4px;
+      border-radius: 10px;
+    }
+    .driver-btn {
+      background: transparent;
+      border: none;
+      color: var(--wa-text-muted);
+      padding: 10px 0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .driver-btn.active {
+      background: var(--wa-green);
+      color: #fff;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .input-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .highlight-badge {
+      color: var(--wa-highlight);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .presets {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .preset-pill {
+      background: var(--wa-card);
+      border: 1px solid var(--wa-border);
+      color: var(--wa-text-muted);
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--wa-green);
+      height: 6px;
+      background: var(--wa-card);
+      border-radius: 4px;
+      outline: none;
+    }
+    .bill-card {
+      background: var(--wa-card);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-left: 4px solid var(--wa-green);
+    }
+    .bill-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--wa-text-muted);
+    }
+    .bill-row.total {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--wa-text);
+      padding-top: 8px;
+      border-top: 1px dashed var(--wa-border);
+    }
+    .book-btn {
+      background-color: var(--wa-green);
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .book-btn:active {
+      background-color: var(--wa-green-hover);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calc-card">
+    <div class="header">
+      <h1>Innova Type 4 Tariff</h1>
+      <p>Instant trip estimate & booking</p>
+    </div>
+
+    <!-- Driver Selector -->
+    <div class="driver-selector">
+      <button type="button" class="driver-btn active" id="btnWithout" onclick="setDriver('without')">Without Driver</button>
+      <button type="button" class="driver-btn" id="btnWith" onclick="setDriver('with')">With Driver</button>
+    </div>
+
+    <!-- Duration -->
+    <div class="input-group">
+      <div class="input-label-row">
+        <span>Rental Duration</span>
+        <span class="highlight-badge" id="daysDisplay">2 Days</span>
+      </div>
+      <input type="range" id="daysRange" min="1" max="10" value="2" oninput="updateCalculation()">
+    </div>
+
+    <!-- KM Slider & Presets -->
+    <div class="input-group">
+      <div class="input-label-row">
+        <span>Total Up & Down KM</span>
+        <span class="highlight-badge" id="kmDisplay">300 KM</span>
+      </div>
+      <input type="range" id="kmRange" min="50" max="1200" step="10" value="300" oninput="updateCalculation()">
+      <div class="presets">
+        <span class="preset-pill" onclick="setRoute(300, 'Palakkad')">Palakkad (300 km)</span>
+        <span class="preset-pill" onclick="setRoute(260, 'Munnar')">Munnar (260 km)</span>
+        <span class="preset-pill" onclick="setRoute(420, 'Trivandrum')">Trivandrum (420 km)</span>
+      </div>
+    </div>
+
+    <!-- Summary Box -->
+    <div class="bill-card">
+      <div class="bill-row">
+        <span>Base Rate</span>
+        <span id="baseFareTxt">₹2,600 (₹1,300/day)</span>
+      </div>
+      <div class="bill-row">
+        <span>Free Allowance</span>
+        <span id="freeKmTxt">200 KM</span>
+      </div>
+      <div class="bill-row">
+        <span>Extra Distance Charge</span>
+        <span id="extraKmTxt">100 KM × ₹10 = ₹1,000</span>
+      </div>
+      <div class="bill-row total">
+        <span>Estimated Total</span>
+        <span id="totalTxt" style="color: var(--wa-highlight);">₹3,600</span>
+      </div>
+    </div>
+
+    <!-- Action Link -->
+    <a href="#" id="waBookLink" class="book-btn">
+      Confirm & Book on WhatsApp
+    </a>
+  </div>
+
+  <script>
+    let driverMode = 'without';
+    let selectedDestination = 'Palakkad';
+    const waNumber = '919496480243';
+
+    function setDriver(mode) {
+      driverMode = mode;
+      document.getElementById('btnWithout').classList.toggle('active', mode === 'without');
+      document.getElementById('btnWith').classList.toggle('active', mode === 'with');
+      updateCalculation();
+    }
+
+    function setRoute(km, name) {
+      document.getElementById('kmRange').value = km;
+      selectedDestination = name;
+      updateCalculation();
+    }
+
+    function updateCalculation() {
+      const days = parseInt(document.getElementById('daysRange').value);
+      const totalKm = parseInt(document.getElementById('kmRange').value);
+
+      document.getElementById('daysDisplay').textContent = `${days} Day${days > 1 ? 's' : ''}`;
+      document.getElementById('kmDisplay').textContent = `${totalKm} KM`;
+
+      const config = driverMode === 'without' 
+        ? { dailyRate: 1300, freeKmPerDay: 100, extraRate: 10, modeTitle: 'Without Driver (Self-Drive)' }
+        : { dailyRate: 3000, freeKmPerDay: 80,  extraRate: 22, modeTitle: 'With Driver' };
+
+      const baseFare = days * config.dailyRate;
+      const freeKmTotal = days * config.freeKmPerDay;
+      const extraKm = Math.max(0, totalKm - freeKmTotal);
+      const extraCharge = extraKm * config.extraRate;
+      const grandTotal = baseFare + extraCharge;
+
+      document.getElementById('baseFareTxt').textContent = `₹${baseFare.toLocaleString('en-IN')} (₹${config.dailyRate}/day)`;
+      document.getElementById('freeKmTxt').textContent = `${freeKmTotal} KM`;
+      document.getElementById('extraKmTxt').textContent = extraKm > 0 ? `${extraKm} KM × ₹${config.extraRate} = ₹${extraCharge.toLocaleString('en-IN')}` : '₹0 (Within Limit)';
+      document.getElementById('totalTxt').textContent = `₹${grandTotal.toLocaleString('en-IN')}`;
+
+      const message = `*Innova Type 4 Booking Inquiry*%0A`
+        + `• Destination / Distance: ${totalKm} KM (${selectedDestination})%0A`
+        + `• Duration: ${days} Days%0A`
+        + `• Type: ${config.modeTitle}%0A`
+        + `----------------------------%0A`
+        + `*Estimated Tariff: ₹${grandTotal.toLocaleString('en-IN')}*%0A`
+        + `----------------------------%0A`
+        + `Please confirm vehicle availability.`;
+
+      document.getElementById('waBookLink').href = `https://wa.me/${waNumber}?text=${message}`;
+    }
+
+    updateCalculation();
+  </script>
+</body>
+</html>
